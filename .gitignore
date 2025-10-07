@@ -47,6 +47,7 @@ env/
 # Large model directories
 nemo_experiments/
 sarashina_0.5B_finetuned/
+sarashina_0.5B_lora/
 
 # Model weights
 *.safetensors

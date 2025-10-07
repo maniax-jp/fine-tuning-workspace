@@ -19,12 +19,13 @@ def main():
     print("="*60)
 
     # モデルとトークナイザーのロード
-    model_path = "/root/.cache/huggingface/hub/models--sbintuitions--sarashina2.2-0.5B-instruct-v0.1/snapshots/e4b9aacc3f644893d0179847946ef6c58d868f29"
+    model_name = "sbintuitions/sarashina2.2-0.5B-instruct-v0.1"
 
     print("\nステップ 1: モデルとトークナイザーのロード...")
-    tokenizer = AutoTokenizer.from_pretrained(model_path)
+    print(f"  Hugging Faceから {model_name} をダウンロード中...")
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
     model = AutoModelForCausalLM.from_pretrained(
-        model_path,
+        model_name,
         torch_dtype=torch.bfloat16,
         device_map="auto",
     )
@@ -58,11 +59,11 @@ def main():
             texts,
             truncation=True,
             max_length=2048,
-            padding=False,
+            padding="max_length",
         )
 
         # ラベルの設定（入力と同じ）
-        result["labels"] = result["input_ids"].copy()
+        result["labels"] = [[label if label != tokenizer.pad_token_id else -100 for label in labels] for labels in result["input_ids"]]
         return result
 
     print("\nステップ 3: データの前処理...")
